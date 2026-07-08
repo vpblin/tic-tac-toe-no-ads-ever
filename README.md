@@ -4,6 +4,15 @@ A neon-arcade Tic Tac Toe for iOS — beautiful, instant, and completely free of
 
 Built with SwiftUI. Play pass-and-play with a friend on one phone, or go solo against a minimax AI with three difficulty levels — including an Unbeatable mode that plays perfect Tic Tac Toe.
 
+## Screenshots
+
+<p align="center">
+  <img src="screenshots/01-home.png" width="220" alt="Home / mode select">
+  <img src="screenshots/02-vs-ai.png" width="220" alt="Solo vs computer">
+  <img src="screenshots/03-win.png" width="220" alt="Win streak">
+  <img src="screenshots/04-difficulty.png" width="220" alt="Difficulty select">
+</p>
+
 ## Features
 
 - **Neon arcade design** — glowing X/O marks, animated win-lines, haptics
@@ -12,6 +21,14 @@ Built with SwiftUI. Play pass-and-play with a friend on one phone, or go solo ag
 - **Alternating starts** — X and O take turns going first each round
 - Running scoreboard across rounds
 - **No ads. No tracking. No accounts. Fully offline.**
+
+## Build & run
+
+1. Clone the repo and open `TicTacToe.xcodeproj` in Xcode 16 or later.
+2. Select the **TicTacToe** target → **Signing & Capabilities** and set your own Development Team.
+3. Choose an iPhone simulator (or a connected device) and press **⌘R**.
+
+Requires iOS 17+. No third-party dependencies.
 
 ## Tech
 
@@ -32,6 +49,10 @@ Built with SwiftUI. Play pass-and-play with a friend on one phone, or go solo ag
 ## Privacy
 
 The app collects no data — no analytics, no tracking, no network calls. Full policy: <https://amk.solutions/tic-tac-toe-privacy>
+
+## License
+
+MIT — see [LICENSE](LICENSE).
 
 ---
 
