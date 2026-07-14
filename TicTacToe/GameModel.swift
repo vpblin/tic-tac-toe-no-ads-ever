@@ -55,6 +55,11 @@ final class GameModel: ObservableObject {
 
     var isOver: Bool { outcome != .playing }
 
+    var winner: Player? {
+        if case .win(let p) = outcome { return p }
+        return nil
+    }
+
     func play(_ index: Int) {
         guard board[index] == nil, !isOver, !isThinking else { return }
         board[index] = current

@@ -65,11 +65,23 @@ struct XShape: Shape {
 }
 
 /// A mark that draws itself on with a glowing stroke.
+///
+/// Pass `animated: false` to render it fully drawn from the first frame. Static
+/// snapshots need this: `ImageRenderer` never runs `onAppear`, so a mark that
+/// waits to animate in would come out blank.
 struct NeonMark: View {
     let player: Player
     var lineWidth: CGFloat = 9
+    var animated: Bool = true
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var progress: CGFloat = 0
+    @State private var progress: CGFloat
+
+    init(player: Player, lineWidth: CGFloat = 9, animated: Bool = true) {
+        self.player = player
+        self.lineWidth = lineWidth
+        self.animated = animated
+        _progress = State(initialValue: animated ? 0 : 1)
+    }
 
     var body: some View {
         GeometryReader { geo in
@@ -92,6 +104,7 @@ struct NeonMark: View {
             .neonGlow(player.color, radius: 18)
         }
         .onAppear {
+            guard animated else { return }
             if reduceMotion {
                 progress = 1
             } else {

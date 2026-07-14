@@ -14,8 +14,14 @@ struct GameView: View {
             topBar
             scoreBar
             statusLine
-            BoardView(game: game)
-                .padding(.horizontal, 6)
+            BoardView(
+                board: game.board,
+                winningLine: game.winningLine,
+                winner: game.winner,
+                interactive: !game.isOver && !game.isThinking,
+                onTap: { game.play($0) }
+            )
+            .padding(.horizontal, 6)
             controls
         }
         .padding(.horizontal, 24)

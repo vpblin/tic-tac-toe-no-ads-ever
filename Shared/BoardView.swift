@@ -1,8 +1,20 @@
 import SwiftUI
 
 /// The 3×3 grid: glowing lines, animated marks, and the winning streak.
+///
+/// Stateless on purpose — it renders whatever board it's handed. The app drives
+/// it from `GameModel`; the iMessage extension drives it from the board carried
+/// in the selected message.
 struct BoardView: View {
-    @ObservedObject var game: GameModel
+    let board: [Player?]
+    var winningLine: [Int]?
+    var winner: Player?
+    /// When false, taps are ignored — game over, AI thinking, or not your turn.
+    var interactive: Bool = true
+    /// False for static snapshots (the message bubble image), which have no
+    /// view lifecycle to drive the draw-on animations.
+    var animated: Bool = true
+    var onTap: (Int) -> Void = { _ in }
 
     var body: some View {
         GeometryReader { geo in
@@ -13,8 +25,8 @@ struct BoardView: View {
                 NeonGridLines(side: side)
 
                 ForEach(0..<9, id: \.self) { i in
-                    if let mark = game.board[i] {
-                        NeonMark(player: mark)
+                    if let mark = board[i] {
+                        NeonMark(player: mark, animated: animated)
                             .frame(width: cell * 0.62, height: cell * 0.62)
                             .position(center(of: i, cell: cell))
                             .id(i) // fresh view per placement so the draw-on animation runs
@@ -27,12 +39,12 @@ struct BoardView: View {
                         .fill(Color.white.opacity(0.001))
                         .frame(width: cell, height: cell)
                         .position(center(of: i, cell: cell))
-                        .onTapGesture { game.play(i) }
-                        .allowsHitTesting(game.board[i] == nil && !game.isOver && !game.isThinking)
+                        .onTapGesture { onTap(i) }
+                        .allowsHitTesting(interactive && board[i] == nil)
                 }
 
-                if let line = game.winningLine, case .win(let p) = game.outcome {
-                    WinStreak(line: line, cell: cell, color: p.color)
+                if let winningLine, let winner {
+                    WinStreak(line: winningLine, cell: cell, color: winner.color, animated: animated)
                 }
             }
             .frame(width: side, height: side)
@@ -78,8 +90,17 @@ private struct WinStreak: View {
     let line: [Int]
     let cell: CGFloat
     let color: Color
+    let animated: Bool
     @Environment(\.accessibilityReduceMotion) private var reduceMotion
-    @State private var progress: CGFloat = 0
+    @State private var progress: CGFloat
+
+    init(line: [Int], cell: CGFloat, color: Color, animated: Bool) {
+        self.line = line
+        self.cell = cell
+        self.color = color
+        self.animated = animated
+        _progress = State(initialValue: animated ? 0 : 1)
+    }
 
     var body: some View {
         Path { p in
@@ -91,6 +112,7 @@ private struct WinStreak: View {
         .foregroundStyle(color)
         .neonGlow(color, radius: 20)
         .onAppear {
+            guard animated else { return }
             if reduceMotion {
                 progress = 1
             } else {
